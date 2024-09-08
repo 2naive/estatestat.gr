@@ -3,11 +3,44 @@ window.onload = () => {
   const plot = document.getElementById('plot')
   let type = (new URLSearchParams(window.location.search)).get('type')
   let area = (new URLSearchParams(window.location.search)).get('area') || 'athens'
-  type = ['sale', 'rent', 'rent_roi', 'area'].includes(type) ? type : 'sale'
+  type = ['sale', 'rent', 'roi', 'area'].includes(type) ? type : 'sale'
+  const config_all = [
+    {
+      type: 'default',
+      z_key: 'price_per_meter',
+      cmax: 7000,
+      cmin: 1000,
+      title: '€/m2',
+      size: 10
+    },
+    {
+      type: 'rent',
+      z_key: 'price_per_meter',
+      cmax: 20,
+      cmin: 5,
+      title: '€/m2',
+      size: 10
+    },
+    {
+      type: 'roi',
+      z_key: 'ROI',
+      cmax: 5,
+      cmin: 2,
+      title: '%/year',
+      size: 30
+    }
+  ]
+  const config = config_all.find(x => x.type === type) || config_all.find(x => x.type === 'default')
+  console.log('Config loaded', config)
   d3.csv(`greece_${type}.csv`, (err, rows) => {
     if (area === 'athens') {
       rows = rows.filter(r => r.Lat > 37.8 && r.Lat < 38.15 && r.Long > 23.55 && r.Long < 23.95)
     }
+    /*
+    if (type === 'roi') {
+      rows = rows.filter(r => r.ROI > 0)
+    }
+    */
     const data = [{
       lon: rows.map(r => r.Long),
       lat: rows.map(r => r.Lat),
@@ -19,23 +52,23 @@ window.onload = () => {
         step: [20,40]
       },
       */
-      z: rows.map(r => r.price_per_meter),
+      z: rows.map(r => r[config.z_key]),
       type: 'scattermap',
       coloraxis: 'coloraxis',
       hoverinfo: 'text',
-      hovertext: rows.map(r => r.price_per_meter),
+      hovertext: rows.map(r => r[config.z_key]),
       marker: {
         allowoverlap: true,
         colorscale: 'Viridis', // Viridis,Jet,Reds,Earth,Rainbow,[[0, 'rgb(100,100,100)'], [1, 'rgb(255,0,0)']]
-        color: rows.map(r => r.price_per_meter),
+        color: rows.map(r => r[config.z_key]),
         opacity: 0.8,
-        sizemin: 4,
-        size: 10,
+        size: config.size,
+        // sizemin: 4,
         // size: rows.map(r => r.rooms > 4 ? 16 : r.rooms * 4),
-        cmax: type === 'sale' ? 7000 : 20,
-        cmin: type === 'sale' ? 1000 : 5,
+        cmax: config.cmax,
+        cmin: config.cmin,
         colorbar: {
-          title: '€/m2',
+          title: config.title,
           showticksuffix: 'last',
           ticksuffix: '+'
         }
