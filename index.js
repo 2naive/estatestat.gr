@@ -2,9 +2,12 @@ window.onload = () => {
   // https://www.somesolvedproblems.com/2018/07/how-do-i-make-plotly-faster.html?m=1
   const plot = document.getElementById('plot')
   let type = (new URLSearchParams(window.location.search)).get('type')
+  let area = (new URLSearchParams(window.location.search)).get('area') || 'athens'
   type = ['sale', 'rent', 'rent_roi', 'area'].includes(type) ? type : 'sale'
   d3.csv(`greece_${type}.csv`, (err, rows) => {
-    rows = rows.filter(r => r.Lat > 37.8 && r.Lat < 38.2 && r.Long > 23.55 && r.Long < 24.0)
+    if (area === 'athens') {
+      rows = rows.filter(r => r.Lat > 37.8 && r.Lat < 38.15 && r.Long > 23.55 && r.Long < 23.95)
+    }
     const data = [{
       lon: rows.map(r => r.Long),
       lat: rows.map(r => r.Lat),
