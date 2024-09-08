@@ -31,8 +31,8 @@ window.onload = () => {
         color: unpack(rows, 'price_per_meter'),
         opacity: 0.8,
         sizemin: 4,
-        // size: 10,
-        size: unpack(rows, 'rooms').map((r) => { return r > 4 ? 16 : r * 4 }),
+        size: 10,
+        // size: unpack(rows, 'rooms').map((r) => { return r > 4 ? 16 : r * 4 }),
         cmax: type === 'sale' ? 7000 : 20,
         cmin: type === 'sale' ? 1000 : 5,
         colorbar: {
@@ -69,7 +69,9 @@ window.onload = () => {
       if (last_zoom !== new_zoom) {
         console.log('Zoom changed: %s -> %s', last_zoom, new_zoom)
         last_zoom = new_zoom
-        Plotly.update(plot, {'marker.size': unpack(rows, 'rooms').map((r) => { return r > 4 ? Math.round(16 * new_zoom/first_zoom) : r * Math.round(4 * new_zoom/first_zoom)})})
+        // Plotly.update(plot, {'marker.size': unpack(rows, 'rooms').map((r) => { return r > 4 ? Math.round(16 * new_zoom/first_zoom) : r * Math.round(4 * new_zoom/first_zoom)})})
+        //
+        Plotly.update(plot, {'marker.size': new_zoom})
       }
     })
   })
