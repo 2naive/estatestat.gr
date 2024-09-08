@@ -1,7 +1,7 @@
 window.onload = () => {
-  const type = (new URLSearchParams(window.location.search)).get('type')
-  const file = ['sale', 'rent', 'rent_roi', 'area'].includes(type) ? type : 'sale'
-  d3.csv(`greece_${file}.csv`, (err, rows) => {
+  let type = (new URLSearchParams(window.location.search)).get('type')
+  type = ['sale', 'rent', 'rent_roi', 'area'].includes(type) ? type : 'sale'
+  d3.csv(`greece_${type}.csv`, (err, rows) => {
     function unpack (rows, key) {
       return rows.map(function (row) {
         return row[key]
