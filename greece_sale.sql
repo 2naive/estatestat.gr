@@ -1,0 +1,2 @@
+SELECT longitude AS Long, latitude AS Lat, price/sq_meters AS price_per_meter FROM properties WHERE imported_at IS NOT NULL AND type='sale' AND modified > '2024-01-01' ORDER BY modified ASC
+/* Сортировка по modified распологает точки на карте в порядке их появления на сайте: более свежие - выше. */

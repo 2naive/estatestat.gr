@@ -1,17 +1,13 @@
 window.onload = () => {
+  // https://www.somesolvedproblems.com/2018/07/how-do-i-make-plotly-faster.html?m=1
   const plot = document.getElementById('plot')
   let type = (new URLSearchParams(window.location.search)).get('type')
   type = ['sale', 'rent', 'rent_roi', 'area'].includes(type) ? type : 'sale'
   d3.csv(`greece_${type}.csv`, (err, rows) => {
-    function unpack (rows, key) {
-      return rows.map(function (row) {
-        return row[key]
-      })
-    }
-
+    rows = rows.filter(r => r.Lat > 37.8 && r.Lat < 38.2 && r.Long > 23.55 && r.Long < 24.0)
     const data = [{
-      lon: unpack(rows, 'Long'),
-      lat: unpack(rows, 'Lat'),
+      lon: rows.map(r => r.Long),
+      lat: rows.map(r => r.Lat),
       /*
       cluster: {
         enabled: true,
@@ -20,19 +16,19 @@ window.onload = () => {
         step: [20,40]
       },
       */
-      z: unpack(rows, 'price_per_meter'),
+      z: rows.map(r => r.price_per_meter),
       type: 'scattermap',
       coloraxis: 'coloraxis',
       hoverinfo: 'text',
-      hovertext: unpack(rows, 'price_per_meter'),
+      hovertext: rows.map(r => r.price_per_meter),
       marker: {
         allowoverlap: true,
         colorscale: 'Viridis', // Viridis,Jet,Reds,Earth,Rainbow,[[0, 'rgb(100,100,100)'], [1, 'rgb(255,0,0)']]
-        color: unpack(rows, 'price_per_meter'),
+        color: rows.map(r => r.price_per_meter),
         opacity: 0.8,
         sizemin: 4,
         size: 10,
-        // size: unpack(rows, 'rooms').map((r) => { return r > 4 ? 16 : r * 4 }),
+        // size: rows.map(r => r.rooms > 4 ? 16 : r.rooms * 4),
         cmax: type === 'sale' ? 7000 : 20,
         cmin: type === 'sale' ? 1000 : 5,
         colorbar: {
@@ -61,17 +57,17 @@ window.onload = () => {
       margin: { t: 0, b: 0, l: 0 }
     }
 
-    Plotly.newPlot(plot, data, layout, { scrollZoom: true })
+    Plotly.react(plot, data, layout, { scrollZoom: true })
+    const first_marker_size = plot.data[0].marker.size
     const first_zoom = plot.layout.map.zoom
     let last_zoom = plot.layout.map.zoom
     plot.on('plotly_relayout', (eventdata) => {
+      // console.log(eventdata)
       const new_zoom = parseInt(eventdata['map.zoom'])
       if (last_zoom !== new_zoom) {
-        console.log('Zoom changed: %s -> %s', last_zoom, new_zoom)
+        console.log('Zoom changed: %s -> %s [%s]', last_zoom, new_zoom, first_marker_size * new_zoom / first_zoom)
         last_zoom = new_zoom
-        // Plotly.update(plot, {'marker.size': unpack(rows, 'rooms').map((r) => { return r > 4 ? Math.round(16 * new_zoom/first_zoom) : r * Math.round(4 * new_zoom/first_zoom)})})
-        //
-        Plotly.update(plot, {'marker.size': new_zoom})
+        Plotly.update(plot, { 'marker.size': first_marker_size * new_zoom / first_zoom })
       }
     })
   })
