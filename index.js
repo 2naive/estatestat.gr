@@ -62,13 +62,14 @@ window.onload = () => {
     }
 
     Plotly.newPlot(plot, data, layout, { scrollZoom: true })
+    const first_zoom = plot.layout.map.zoom
     let last_zoom = plot.layout.map.zoom
     plot.on('plotly_relayout', (eventdata) => {
       const new_zoom = parseInt(eventdata['map.zoom'])
       if (last_zoom !== new_zoom) {
         console.log('Zoom changed: %s -> %s', last_zoom, new_zoom)
         last_zoom = new_zoom
-        Plotly.update(plot, {'marker.size': unpack(rows, 'rooms').map((r) => { return r > 4 ? 16 * new_zoom/10 : r * 4 * new_zoom/10})})
+        Plotly.update(plot, {'marker.size': unpack(rows, 'rooms').map((r) => { return r > 4 ? 16 * new_zoom/first_zoom : r * 4 * new_zoom/first_zoom})})
       }
     })
   })
