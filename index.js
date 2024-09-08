@@ -1,4 +1,5 @@
 window.onload = () => {
+  const plot = document.getElementById('plot')
   let type = (new URLSearchParams(window.location.search)).get('type')
   type = ['sale', 'rent', 'rent_roi', 'area'].includes(type) ? type : 'sale'
   d3.csv(`greece_${type}.csv`, (err, rows) => {
@@ -60,6 +61,15 @@ window.onload = () => {
       margin: { t: 0, b: 0, l: 0 }
     }
 
-    Plotly.newPlot('plot', data, layout, { scrollZoom: true })
+    Plotly.newPlot(plot, data, layout, { scrollZoom: true })
+    let last_zoom = plot.layout.map.zoom
+    plot.on('plotly_relayout', (eventdata) => {
+      const new_zoom = parseInt(eventdata['map.zoom'])
+      if (last_zoom !== new_zoom) {
+        console.log('Zoom changed: %s -> %s', last_zoom, new_zoom)
+        last_zoom = new_zoom
+        Plotly.update(plot, {'marker.size': unpack(rows, 'rooms').map((r) => { return r > 4 ? 16 * new_zoom/10 : r * 4 * new_zoom/10})})
+      }
+    })
   })
 }
