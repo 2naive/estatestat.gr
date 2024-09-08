@@ -48,7 +48,7 @@ window.onload = () => {
       map: {
         center: { lon: 23.75, lat: 38 },
         style: 'open-street-map', // basic, carto-darkmatter, carto-darkmatter-nolabels, carto-positron, carto-positron-nolabels, carto-voyager, carto-voyager-nolabels, dark, light, open-street-map, outdoors, satellite, satellite-streets, streets, white-bg
-        zoom: 10
+        zoom: area === 'athens' ? 10 : 6
       },
       coloraxis: {
         colorscale: 'Viridis',
