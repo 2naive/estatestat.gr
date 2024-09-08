@@ -69,7 +69,7 @@ window.onload = () => {
       if (last_zoom !== new_zoom) {
         console.log('Zoom changed: %s -> %s', last_zoom, new_zoom)
         last_zoom = new_zoom
-        Plotly.update(plot, {'marker.size': unpack(rows, 'rooms').map((r) => { return r > 4 ? 16 * new_zoom/first_zoom : r * 4 * new_zoom/first_zoom})})
+        Plotly.update(plot, {'marker.size': unpack(rows, 'rooms').map((r) => { return r > 4 ? Math.round(16 * new_zoom/first_zoom) : r * Math.round(4 * new_zoom/first_zoom)})})
       }
     })
   })
