@@ -1,13 +1,14 @@
-d3.csv('prop_sale_greece.csv',
-  function (err, rows) {
+window.onload = () => {
+  const type = (new URLSearchParams(window.location.search)).get('type')
+  const file = ['sale', 'rent', 'rent_roi', 'area'].includes(type) ? type : 'sale'
+  d3.csv(`greece_${type}.csv`, (err, rows) => {
     function unpack (rows, key) {
       return rows.map(function (row) {
         return row[key]
       })
-    };
+    }
 
     const data = [{
-      ids: unpack(rows, 'Address'),
       lon: unpack(rows, 'Long'),
       lat: unpack(rows, 'Lat'),
       /*
@@ -30,13 +31,13 @@ d3.csv('prop_sale_greece.csv',
         opacity: 0.8,
         sizemin: 4,
         // size: 10,
-        size: unpack(rows, 'rooms').map((r)=>{return r>4?16:r*4}),
-        // cmax: 20, // rent
-        // cmin: 5, // rent
-        cmax: 8000, // sale
-        cmin: 1000, // sale
+        size: unpack(rows, 'rooms').map((r) => { return r > 4 ? 16 : r * 4 }),
+        cmax: type === 'sale' ? 7000 : 20,
+        cmin: type === 'sale' ? 1000 : 5,
         colorbar: {
-          title: '€/m2'
+          title: '€/m2',
+          showticksuffix: 'last',
+          ticksuffix: '+'
         }
       },
       connectgaps: false
@@ -46,18 +47,19 @@ d3.csv('prop_sale_greece.csv',
       dragmode: 'zoom',
       map: {
         center: { lon: 23.75, lat: 38 },
-        style: 'open-street-map',
+        style: 'open-street-map', // basic, carto-darkmatter, carto-darkmatter-nolabels, carto-positron, carto-positron-nolabels, carto-voyager, carto-voyager-nolabels, dark, light, open-street-map, outdoors, satellite, satellite-streets, streets, white-bg
         zoom: 10
       },
       coloraxis: {
         colorscale: 'Viridis',
         showscale: true
       },
-      //title: { text: '' },
-      //width: 1400,
-      //height: 800,
-      margin: { t: 30, b: 0 }
+      // title: { text: '' },
+      // width: 1400,
+      // height: 800,
+      margin: { t: 0, b: 0, l: 0 }
     }
 
-    Plotly.newPlot('plot', data, layout, {scrollZoom: true})
+    Plotly.newPlot('plot', data, layout, { scrollZoom: true })
   })
+}
