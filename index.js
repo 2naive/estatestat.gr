@@ -38,7 +38,7 @@ window.onload = () => {
       cmax: 6000,
       cmin: 1000,
       title: '€/m2',
-      size: (r) => 20 + r.n_sale / 20,
+      size: (r) => 10 + r.n_sale / 15,
       hovertemplate: '</br><b>%{customdata.geography}</b></br>On Sale: %{customdata.n_sale}</br>On Rent: %{customdata.n_rent}</br>Sale €/m2: %{customdata.sale_price_per_meter}</br>Rent €/m2: %{customdata.rent_price_per_meter}</br>ROI: %{customdata.ROI}<extra></extra>'
     }
   ]
